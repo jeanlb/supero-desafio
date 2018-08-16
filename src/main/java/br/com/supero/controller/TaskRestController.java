@@ -40,6 +40,12 @@ public class TaskRestController {
 
 		return listTaskDTO;
 	}
+	
+	@GetMapping("/{id}")
+	public TaskDTO getTaskPorId(@PathVariable(value = "id") Long id) {
+		Task task = taskService.getTaskPorId(id);
+        return convertToDto(task);
+    }
 
 	@PostMapping("/inserir")
 	public TaskDTO inserir(@Valid TaskDTO taskDTO) {
@@ -49,13 +55,24 @@ public class TaskRestController {
 		return convertToDto(taskInserida);
 	}
 	
-	@PutMapping("/atualizar/status/{id}/{status}")
+	@PutMapping("/atualizar")
+	public TaskDTO atualizar(@Valid TaskDTO taskDTO) {
+		Task task = convertToEntity(taskDTO);
+		Task taskAtualizada = taskService.atualizar(task);
+		
+		return convertToDto(taskAtualizada);
+	}
+	
+	@PutMapping("/atualizar/status/{id}/{statusConcluido}")
 	public ResponseEntity<?> atualizarStatus(@PathVariable(value = "id") Long id, 
-			@PathVariable(value = "status") Boolean status) {
+			@PathVariable(value = "statusConcluido") Boolean statusConcluido) {
 		
-		taskService.atualizarStatus(id, status);
+		taskService.atualizarStatus(id, statusConcluido);
 		
-		return ResponseEntity.ok().body("Task com status atualizado. id: " + id + " status: " + status);
+		String mensagem = "Task concluida";
+		if (!statusConcluido) mensagem = "Task reativada para ser concluida";
+		
+		return ResponseEntity.ok().body(mensagem);
 	}
 	
 	@DeleteMapping("/{id}")
@@ -67,7 +84,7 @@ public class TaskRestController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body("Task de id " + id + " nao foi deletada. Possivelmente este id nao existe");
 			
-	    return ResponseEntity.ok().body("Task deletada");
+	    return ResponseEntity.ok().body("Task deletada com sucesso");
 	}
 
 	/** Converter entity para dto */

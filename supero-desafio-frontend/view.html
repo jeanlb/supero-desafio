@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Visualizar Task</title>
+
+	<link rel="stylesheet" type="text/css" href="resources/css/pure-min.css">
+	<link rel="stylesheet" type="text/css" href="resources/css/estilo.css">
+	<script type="text/javascript" src="resources/javascript/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+	<h1>Visualizar Task</h1>
+	<hr>
+	
+	<form class="pure-form pure-form-aligned">
+		<label for="titulo">Título: </label>
+		<input type="text" id="titulo" readonly />
+		
+		<label for="descricao">Descrição: </label>
+		<textarea id="descricao" readonly></textarea>
+
+		<label for="status_concluido">Concluida: </label>
+		<input type="checkbox" id="status_concluido" readonly>
+		
+		<hr><br>
+		<a href="index.html" class="pure-button">Voltar</a>
+	</form>
+
+	<script type="text/javascript">
+		
+		$(document).ready(function() {
+
+			var taskId = window.location.search.split('=')[1]; // pegar valor do parametro id na url
+
+			$.ajax({
+		        type: 'GET',
+		        url: "http://localhost:8080/task/" + taskId,
+		        success: function(task) {
+		        	$("#titulo").val(task.titulo);
+		        	$("#descricao").val(task.descricao);
+		        	$("#status_concluido").prop("checked", task.statusConcluido);
+		        }
+		    });
+
+		});
+
+	</script>
+
+</body>
+</html>

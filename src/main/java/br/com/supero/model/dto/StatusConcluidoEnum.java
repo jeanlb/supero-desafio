@@ -1,16 +1,16 @@
 package br.com.supero.model.dto;
 
-public enum TaskEnum {
-
-	CONCLUIDO {
+public enum StatusConcluidoEnum {
+	
+	SIM {
 		public String toString() {
-			return "Concluido";
+			return "Sim";
 		}
 	},
 
-	EM_ANDAMENTO {
+	NAO {
 		public String toString() {
-			return "Em andamento";
+			return "Nao";
 		}
 	}
 

@@ -9,9 +9,9 @@ CREATE TABLE task (
   id                        BIGINT(20) AUTO_INCREMENT NOT NULL,
   titulo                    VARCHAR(255),
   descricao                 VARCHAR(255),
-  status                    TINYINT(1) DEFAULT 0 NOT NULL,
-  data_criacao	            DATE DEFAULT NULL,
-  data_modificacao          DATE DEFAULT NULL,
+  status_concluido          TINYINT(1) DEFAULT 0 NOT NULL,
+  data_criacao	            DATETIME DEFAULT NULL,
+  data_modificacao          DATETIME DEFAULT NULL,
   
   CONSTRAINT pk_task PRIMARY KEY (id)
   

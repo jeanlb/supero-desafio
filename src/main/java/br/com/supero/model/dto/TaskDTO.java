@@ -6,13 +6,13 @@ import java.util.Date;
 
 public class TaskDTO {
 	
-	private static final SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
+	private static final SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
 	// Atributos
 	private Long id;
 	private String titulo;
 	private String descricao;
-	private String status;
+	private Boolean statusConcluido;
 	private Date dataCriacao;
 	private Date dataModificacao;
 
@@ -40,35 +40,47 @@ public class TaskDTO {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+	
+	public Date getDataCriacao() {
+		return dataCriacao;
+	}
 
-	public String getDataCriacao() {
+	public String getDataCriacaoFormatada() {
 		if (dataCriacao != null) {
 			return formatoData.format(dataCriacao);
 		}
-		return null;
+		return "";
 	}
 
 	public void setDataCriacao(Date dataCriacao) {
 		this.dataCriacao = dataCriacao;
 	}
+	
+	public Date getDataModificacao() {
+		return dataModificacao;
+	}
 
-	public String getDataModificacao() {
+	public String getDataModificacaoFormatada() {
 		if (dataModificacao != null) {
 			return formatoData.format(dataModificacao);
 		}
-		return null;
+		return "";
 	}
 
 	public void setDataModificacao(Date dataModificacao) {
 		this.dataModificacao = dataModificacao;
 	}
 
-	public String getStatus() {
-		return status;
+	public Boolean isStatusConcluido() {
+		return statusConcluido;
 	}
 
-	public void setStatus(Boolean status) {
-		this.status = status ? TaskEnum.CONCLUIDO.toString() : TaskEnum.EM_ANDAMENTO.toString();
+	public void setStatusConcluido(Boolean concluido) {
+		this.statusConcluido = concluido;
 	}
-
+	
+	public String getStatusConcluidoFormatado() {
+		return isStatusConcluido() ? StatusConcluidoEnum.SIM.toString() : StatusConcluidoEnum.NAO.toString();
+	}
+	
 }

@@ -19,8 +19,8 @@ public class Task {
 	private String titulo;
 	private String descricao;
 	
-	@Column(nullable = false)
-	private Boolean status;
+	@Column(name = "status_concluido", nullable = false)
+	private Boolean statusConcluido;
 	
 	@Column(name = "data_criacao")
 	private Date dataCriacao;
@@ -61,12 +61,12 @@ public class Task {
 		this.descricao = descricao;
 	}
 
-	public Boolean getStatus() {
-		return status;
+	public Boolean isStatusConcluido() {
+		return statusConcluido;
 	}
 
-	public void setStatus(Boolean status) {
-		this.status = status;
+	public void setStatusConcluido(Boolean concluido) {
+		this.statusConcluido = concluido;
 	}
 
 	public Date getDataCriacao() {

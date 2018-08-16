@@ -28,21 +28,31 @@ public class TaskService {
 	public Task inserir(Task task) {
 
 		Task taskInserida = new Task(task.getTitulo(), task.getDescricao());
-		taskInserida.setStatus(false);
+		taskInserida.setStatusConcluido(false);
 		taskInserida.setDataCriacao(new Date());
 
 		taskDAO.saveAndFlush(taskInserida);
 
 		return taskInserida;
 	}
-
-	public List<Task> listar() {
-		return taskDAO.findAll();
-	}
 	
-	public void atualizarStatus(Long id, Boolean status) {
+	public Task atualizar(Task task) {
+		
+		Task taskAtualizada = getTaskPorId(task.getId());
+		
+		taskAtualizada.setTitulo(task.getTitulo());
+		taskAtualizada.setDescricao(task.getDescricao());
+		taskAtualizada.setStatusConcluido(task.isStatusConcluido());
+		taskAtualizada.setDataModificacao(new Date());
+		
+		return taskDAO.saveAndFlush(taskAtualizada);
+	}
+
+	public void atualizarStatus(Long id, Boolean statusConcluido) {
+		
 		Task task = getTaskPorId(id);
-		task.setStatus(status);
+		
+		task.setStatusConcluido(statusConcluido);
 		task.setDataModificacao(new Date());
 		
 		taskDAO.saveAndFlush(task);
@@ -50,6 +60,10 @@ public class TaskService {
 	
 	public Task getTaskPorId(Long id) {
 		return taskDAO.findById(id).get();
+	}
+	
+	public List<Task> listar() {
+		return taskDAO.findAll();
 	}
 
 	public boolean deletar(Long id) {
