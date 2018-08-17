@@ -17,7 +17,8 @@ public class SuperoDesafioApplication {
 	
 	/**
 	 * Configuracao de Bean utilizado para converter entity para dto e vice-versa.
-	 * Dependencia adicionada ao Maven (org.modelmapper)
+	 * Dependencia adicionada ao Maven (org.modelmapper).
+	 * Fonte: https://www.baeldung.com/entity-to-and-from-dto-for-a-java-spring-application
 	 * 
 	 */
 	@Bean
@@ -31,7 +32,8 @@ public class SuperoDesafioApplication {
 		return new WebMvcConfigurerAdapter() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/task/**").allowedOrigins("*").allowedMethods("GET", "POST","PUT", "DELETE");
+				registry.addMapping("/task/**").allowedOrigins("*")
+					.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT");
 			}
 		};
 	}

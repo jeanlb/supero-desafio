@@ -24,7 +24,7 @@
 		
 		<hr><br>
 		<input type="submit" value="Salvar" class="pure-button pure-button-primary" />
-		<a href="index.html" class="pure-button">Voltar</a>
+		<a href="/" class="pure-button">Voltar</a>
 	</form>
 
 	<script type="text/javascript">
@@ -42,7 +42,7 @@
 			        data: {'titulo': titulo, 'descricao': descricao},
 			        success: function(response) {
 			        	alert('Task ' + titulo + ' adicionada com sucesso');
-			        	location.href = "index.html";
+			        	location.href = "/";
 			        }
 			    });
 			    return false;

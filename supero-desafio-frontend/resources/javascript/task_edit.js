@@ -26,7 +26,7 @@ $(document).ready(function() {
 	        data: {'id': id, 'titulo': titulo, 'descricao': descricao, 'statusConcluido': statusConcluido},
 	        success: function(response) {
 	        	alert('Task ' + titulo + ' atualizada com sucesso');
-	        	location.href = "index.html";
+	        	location.href = "/";
 	        }
 	    });
 	    return false;
