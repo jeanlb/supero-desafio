@@ -22,6 +22,6 @@ Frontend (supero-desafio-frontend):
 - Importe para o MySQL o script em supero-desafio\database\schema.sql 
 - No arquivo application.properties coloque a senha do seu banco (propriedade spring.datasource.password)
 - Gere o .jar do projeto (estando dentro da pasta supero-desafio) com o comando: mvn clean install package -DskipTests
-- Rode o .jar do projeto
+- Rode o .jar do projeto. A aplicação backend por padrão rodará em: http://localhost:8080
 - Para o frontend utilize um servidor Web para levantar a aplicação. Localmente utilizei o servidor Web embutido no Python (caso o Python esteja instalado e configurado em seu PC/notebook). Exemplo: entre na pasta supero-desafio-frontend e no terminal/console execute o comando: python -m http.server
 - Caso tenha iniciado um servidor Web local com Python a aplicação frontend estará rodando no endereço padrão http://localhost:8000
