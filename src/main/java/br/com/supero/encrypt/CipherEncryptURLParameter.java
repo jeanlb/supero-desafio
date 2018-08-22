@@ -13,8 +13,7 @@ import org.apache.commons.codec.binary.Base64;
 
 /**
  * Simple encrypt/decrypt util for url parameters
- * Fonte: https://gist.github.com/cxubrix/4316635
- * @author Jean
+ * Web Source: https://gist.github.com/cxubrix/4316635
  *
  */
 public class CipherEncryptURLParameter {
@@ -91,14 +90,10 @@ public class CipherEncryptURLParameter {
 	
 	public static void main(String[] args) {
 		
-		try {
-			String encriptada = CipherEncryptURLParameter.encrypt("999999999999999999999999");
-			System.out.println(encriptada);
-			String decriptada = CipherEncryptURLParameter.decrypt(encriptada);
-			System.out.println(decriptada);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		String encriptada = CipherEncryptURLParameter.encrypt("999999999999999999999999");
+		System.out.println(encriptada);
+		String decriptada = CipherEncryptURLParameter.decrypt(encriptada);
+		System.out.println(decriptada);
 	}
 
 }
