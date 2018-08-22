@@ -3,7 +3,7 @@ var apiUrl;
 
 // pegar url da api no arquivo de configuracoes da aplicacao
 function getApiUrl() {
-    
+
     $.ajax({
         url: "../../application.json",
         type: "GET",
