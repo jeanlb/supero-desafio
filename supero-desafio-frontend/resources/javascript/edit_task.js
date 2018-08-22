@@ -1,7 +1,9 @@
 $(document).ready(function() {
 
-	var taskId = window.location.search.split('=')[1]; // pegar valor do parametro id na url
+	// pegar valor do parametro id na url que estah apos a ultima '/'
+	var taskId = window.location.href.substr(window.location.href.lastIndexOf('/') + 1);
 
+	// pegar a task pelo id e renderizar dados na view
 	$.ajax({
         type: 'GET',
         url: "http://localhost:8080/task/" + taskId,
@@ -13,6 +15,7 @@ $(document).ready(function() {
         }
     });
 
+	// requisicao ao servidor para atualizar task
 	$("#form_edit_task").submit(function() {
 
 		var id = $("#task_id").val();
@@ -25,8 +28,8 @@ $(document).ready(function() {
 	        url: "http://localhost:8080/task/atualizar",
 	        data: {'id': id, 'titulo': titulo, 'descricao': descricao, 'statusConcluido': statusConcluido},
 	        success: function(response) {
-	        	alert('Task ' + titulo + ' atualizada com sucesso');
-	        	location.href = "/";
+	        	location.href = "#/";
+	        	$('#message').html('Task ' + titulo + ' atualizada com sucesso').css('color', 'blue');
 	        }
 	    });
 	    return false;

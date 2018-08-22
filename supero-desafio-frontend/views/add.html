@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Adicionar Task</title>
+
+	<link rel="stylesheet" type="text/css" href="../resources/css/pure-min.css">
+	<link rel="stylesheet" type="text/css" href="../resources/css/estilo.css">
+	<script type="text/javascript" src="../resources/javascript/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="../resources/javascript/add_task.js"></script>
+</head>
+<body>
+
+	<hr>
+	
+	<form id="form_add_task" class="pure-form pure-form-aligned">
+		<label for="titulo">Título: </label>
+		<input type="text" id="titulo" required />
+		
+		<label for="descricao">Descrição: </label>
+		<textarea id="descricao"></textarea>
+		
+		<hr><br>
+		<input type="submit" value="Salvar" class="pure-button pure-button-primary" />
+		<a href="#/" class="pure-button">Voltar</a>
+	</form>
+
+</body>
+</html>
