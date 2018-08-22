@@ -1,5 +1,5 @@
 /* 
- * Este script eh o responsavel pelo roteamento das urls/requisicoes no frontend.
+ * Este script eh o responsavel pelo roteamento das views no frontend.
  * Utilizando o plugin (JavaScript): https://www.npmjs.com/package/jq-router
 */
 
