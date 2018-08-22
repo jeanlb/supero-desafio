@@ -3,6 +3,8 @@ package br.com.supero.model.dto;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import br.com.supero.encrypt.CipherEncryptURLParameter;
+
 
 public class TaskDTO {
 	
@@ -21,6 +23,11 @@ public class TaskDTO {
 		return id;
 	}
 
+	/** Encriptar id para que o seu valor real nao seja exibido em urls e views */
+	public String getIdEncriptado() {
+		return CipherEncryptURLParameter.encrypt(String.valueOf(this.id));
+	}
+	
 	public void setId(Long id) {
 		this.id = id;
 	}

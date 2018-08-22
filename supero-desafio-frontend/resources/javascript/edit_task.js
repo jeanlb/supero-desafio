@@ -8,7 +8,7 @@ $(document).ready(function() {
         type: 'GET',
         url: apiUrl + "/task/" + taskId,
         success: function(task) {
-        	$("#task_id").val(task.id);
+        	$("#task_id").val(task.idEncriptado);
         	$("#titulo").val(task.titulo);
         	$("#descricao").val(task.descricao);
         	$("#status_concluido").prop("checked", task.statusConcluido);

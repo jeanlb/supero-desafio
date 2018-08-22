@@ -32,8 +32,8 @@ public class TaskRestController {
 	}
 	
 	@GetMapping("/{id}")
-	public TaskDTO getTaskPorId(@PathVariable(value = "id") Long id) {
-		TaskDTO task = taskService.getTaskDTOPorId(id);
+	public TaskDTO getTaskPorId(@PathVariable(value = "id") String idEncrypted) {
+		TaskDTO task = taskService.getTaskDTOPorId(idEncrypted);
         return task;
     }
 
@@ -52,10 +52,10 @@ public class TaskRestController {
 	}
 	
 	@PutMapping("/atualizar/status/{id}/{statusConcluido}")
-	public ResponseEntity<?> atualizarStatus(@PathVariable(value = "id") Long id, 
+	public ResponseEntity<?> atualizarStatus(@PathVariable(value = "id") String idEncrypted, 
 			@PathVariable(value = "statusConcluido") Boolean statusConcluido) {
 		
-		taskService.atualizarStatus(id, statusConcluido);
+		taskService.atualizarStatus(idEncrypted, statusConcluido);
 		
 		String mensagem = "Task concluida";
 		if (!statusConcluido) mensagem = "Task reativada para ser concluida";
@@ -64,13 +64,13 @@ public class TaskRestController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deletar(@PathVariable(value = "id") Long id) {
+	public ResponseEntity<?> deletar(@PathVariable(value = "id") String idEncrypted) {
 	    
-		boolean foiDeletada = taskService.deletar(id);
+		boolean foiDeletada = taskService.deletar(idEncrypted);
 		
 		if (!foiDeletada)
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body("Task de id " + id + " nao foi deletada. Possivelmente este id nao existe");
+					.body("Task nao foi deletada. Possivelmente este id nao existe");
 			
 	    return ResponseEntity.ok().body("Task deletada com sucesso");
 	}

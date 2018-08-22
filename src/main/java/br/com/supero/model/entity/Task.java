@@ -35,7 +35,7 @@ public class Task {
 	}
 	
 	public Task() {}
-
+	
 	// Getters and Setters
 	public Long getId() {
 		return id;
