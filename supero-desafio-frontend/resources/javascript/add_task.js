@@ -8,7 +8,7 @@ $(document).ready(function() {
 
 		$.ajax({
 	        type: 'POST',
-	        url: "http://localhost:8080/task/inserir",
+	        url: apiUrl + "/task/inserir",
 	        data: {'titulo': titulo, 'descricao': descricao},
 	        success: function(response) {
 	        	location.href = "#/";

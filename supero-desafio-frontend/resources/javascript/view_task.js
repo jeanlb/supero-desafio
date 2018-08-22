@@ -6,7 +6,7 @@ $(document).ready(function() {
 	// pegar a task pelo id e renderizar dados na view
 	$.ajax({
         type: 'GET',
-        url: "http://localhost:8080/task/" + taskId,
+        url: apiUrl + "/task/" + taskId,
         success: function(task) {
         	$("#titulo").val(task.titulo);
         	$("#descricao").val(task.descricao);

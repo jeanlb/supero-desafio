@@ -8,7 +8,7 @@ $(document).ready(function() {
 function listarTasks() {
 
 	$.ajax({
-    	url: "http://localhost:8080/task",
+    	url: apiUrl + "/task",
     	type: "GET",
     	dataType: "json",
     	cache: false,
@@ -59,7 +59,7 @@ function editarTask(id) {
 // requisicao ao servidor para concluir uma task pelo id
 function concluirTask(id) {
 	$.ajax({
-    	url: "http://localhost:8080/task/atualizar/status/" + id + "/" + true,
+    	url: apiUrl + "/task/atualizar/status/" + id + "/" + true,
     	type: "PUT",
     	success: function(response) {
     		listarTasks();
@@ -71,7 +71,7 @@ function concluirTask(id) {
 // requisicao ao servidor para reativar uma task pelo id
 function reativarTask(id) {
 	$.ajax({
-    	url: "http://localhost:8080/task/atualizar/status/" + id + "/" + false,
+    	url: apiUrl + "/task/atualizar/status/" + id + "/" + false,
     	type: "PUT",
     	success: function(response) {
     		listarTasks();
@@ -84,7 +84,7 @@ function reativarTask(id) {
 function deletarTask(id) {
 	if (confirm('Tem certeza de que deseja deletar esta task?')) {
 		$.ajax({
-	    	url: "http://localhost:8080/task/" + id,
+	    	url: apiUrl + "/task/" + id,
 	    	type: "DELETE",
 	    	success: function(response) {
 	    		listarTasks();
