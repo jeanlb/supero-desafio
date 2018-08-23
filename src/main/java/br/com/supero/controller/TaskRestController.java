@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.supero.encrypt.CipherEncryptURLParameter;
 import br.com.supero.model.dto.TaskDTO;
 import br.com.supero.service.TaskService;
 
@@ -33,7 +34,9 @@ public class TaskRestController {
 	
 	@GetMapping("/{id}")
 	public TaskDTO getTaskPorId(@PathVariable(value = "id") String idEncrypted) {
-		TaskDTO task = taskService.getTaskDTOPorId(idEncrypted);
+		
+		Long id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
+		TaskDTO task = taskService.getTaskDTOPorId(id);
         return task;
     }
 
@@ -55,7 +58,9 @@ public class TaskRestController {
 	public ResponseEntity<?> atualizarStatus(@PathVariable(value = "id") String idEncrypted, 
 			@PathVariable(value = "statusConcluido") Boolean statusConcluido) {
 		
-		taskService.atualizarStatus(idEncrypted, statusConcluido);
+		Long id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
+		
+		taskService.atualizarStatus(id, statusConcluido);
 		
 		String mensagem = "Task concluida";
 		if (!statusConcluido) mensagem = "Task reativada para ser concluida";
@@ -66,7 +71,8 @@ public class TaskRestController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletar(@PathVariable(value = "id") String idEncrypted) {
 	    
-		boolean foiDeletada = taskService.deletar(idEncrypted);
+		Long id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
+		boolean foiDeletada = taskService.deletar(id);
 		
 		if (!foiDeletada)
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)

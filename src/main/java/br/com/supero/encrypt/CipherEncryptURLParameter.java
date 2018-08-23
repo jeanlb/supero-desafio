@@ -14,6 +14,13 @@ import org.apache.commons.codec.binary.Base64;
 /**
  * Simple encrypt/decrypt util for url parameters
  * Web Source: https://gist.github.com/cxubrix/4316635
+ * 
+ * Why not dependency injection with this class, with this case?
+ * See: https://softwareengineering.stackexchange.com/questions/360525/dependency-injection-vs-static-methods
+ * 
+ * "There is no reason why this needs to be injected. This is just a function, it has no dependencies, so just 
+ * call it. It can even be static if you want as it looks to be pure. One can write unit tests against this 
+ * with no difficulty. If it is used in other classes, unit tests can still be written."
  *
  */
 public class CipherEncryptURLParameter {

@@ -48,23 +48,23 @@ function renderizarLinha(task) {
 
 // requisicao a view de visualizar task
 function visualizarTask(btnVisualizar) {
-    var idEncripted = btnVisualizar.getAttribute('data-id');
-	location.href = "#/view/" + idEncripted;
+    var idEncriptado = btnVisualizar.getAttribute('data-id');
+	location.href = "#/view/" + idEncriptado;
 }
 
 // requisicao a view de editar task
 function editarTask(btnEditar) {
-    var idEncripted = btnEditar.getAttribute('data-id');
-	location.href = "#/edit/" + idEncripted;
+    var idEncriptado = btnEditar.getAttribute('data-id');
+	location.href = "#/edit/" + idEncriptado;
 }
 
 // requisicao ao servidor para concluir uma task pelo id
 function concluirTask(btnConcluir) {
 
-    var idEncripted = btnConcluir.getAttribute('data-id');
+    var idEncriptado = btnConcluir.getAttribute('data-id');
 
 	$.ajax({
-    	url: apiUrl + "/task/atualizar/status/" + idEncripted + "/" + true,
+    	url: apiUrl + "/task/atualizar/status/" + idEncriptado + "/" + true,
     	type: "PUT",
     	success: function(response) {
     		listarTasks();
@@ -76,10 +76,10 @@ function concluirTask(btnConcluir) {
 // requisicao ao servidor para reativar uma task pelo id
 function reativarTask(btnReativar) {
 
-    var idEncripted = btnReativar.getAttribute('data-id');
+    var idEncriptado = btnReativar.getAttribute('data-id');
 
 	$.ajax({
-    	url: apiUrl + "/task/atualizar/status/" + idEncripted + "/" + false,
+    	url: apiUrl + "/task/atualizar/status/" + idEncriptado + "/" + false,
     	type: "PUT",
     	success: function(response) {
     		listarTasks();
@@ -91,11 +91,11 @@ function reativarTask(btnReativar) {
 // requisicao ao servidor para deletar uma task pelo id
 function deletarTask(btnDeletar) {
 
-    var idEncripted = btnDeletar.getAttribute('data-id');
+    var idEncriptado = btnDeletar.getAttribute('data-id');
 
 	if (confirm('Tem certeza de que deseja deletar esta task?')) {
 		$.ajax({
-	    	url: apiUrl + "/task/" + idEncripted,
+	    	url: apiUrl + "/task/" + idEncriptado,
 	    	type: "DELETE",
 	    	success: function(response) {
 	    		listarTasks();

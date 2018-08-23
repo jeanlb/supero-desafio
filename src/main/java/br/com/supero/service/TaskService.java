@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import br.com.supero.encrypt.CipherEncryptURLParameter;
 import br.com.supero.model.dao.TaskDAO;
 import br.com.supero.model.dto.TaskDTO;
 import br.com.supero.model.entity.Task;
@@ -60,10 +59,9 @@ public class TaskService {
 		return convertToDto(taskAtualizada);
 	}
 
-	public void atualizarStatus(String idEncrypted, Boolean statusConcluido) {
+	public void atualizarStatus(Long id, Boolean statusConcluido) {
 		
-		Long idDecrypted = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
-		Task task = getTaskPorId(idDecrypted);
+		Task task = getTaskPorId(id);
 		
 		task.setStatusConcluido(statusConcluido);
 		task.setDataModificacao(new Date());
@@ -71,10 +69,8 @@ public class TaskService {
 		taskDAO.saveAndFlush(task);
 	}
 	
-	public TaskDTO getTaskDTOPorId(String idEncrypted) {
-		Long idDecrypted = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
-		
-		Task task = getTaskPorId(idDecrypted);
+	public TaskDTO getTaskDTOPorId(Long id) {
+		Task task = getTaskPorId(id);
 		return convertToDto(task);
 	}
 	
@@ -94,10 +90,9 @@ public class TaskService {
 		return listTaskDTO;
 	}
 
-	public boolean deletar(String idEncrypted) {
+	public boolean deletar(Long id) {
 		try {
-			Long idDecrypted = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
-			taskDAO.deleteById(idDecrypted);
+			taskDAO.deleteById(id);
 			return true;
 		} catch (EmptyResultDataAccessException e) {
 			LoggerFactory.getLogger(this.getClass())
