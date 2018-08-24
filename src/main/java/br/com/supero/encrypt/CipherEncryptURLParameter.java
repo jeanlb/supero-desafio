@@ -11,9 +11,13 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
 
+import br.com.supero.config.EnvironmentProperties;
+
 /**
  * Simple encrypt/decrypt util for url parameters
  * Web Source: https://gist.github.com/cxubrix/4316635
+ * 
+ * Ps.: Este codigo teve algumas adaptacoes em relacao ao original 
  * 
  * Why not dependency injection with this class, with this case?
  * See: https://softwareengineering.stackexchange.com/questions/360525/dependency-injection-vs-static-methods
@@ -25,9 +29,9 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class CipherEncryptURLParameter {
 	
-	// some random salt
-	private static final byte[]	SALT = { (byte) 0x21, (byte) 0x21, (byte) 0xF0, (byte) 0x55, (byte) 0xC3, (byte) 0x9F, (byte) 0x5A, (byte) 0x75 };
-	private final static int ITERATION_COUNT = 31;
+	private static final char[] SECRET_KEY = EnvironmentProperties.getProperty("secret.key").toCharArray();
+	private static final byte[]	SALT = { (byte) 0x21, (byte) 0x21, (byte) 0xF0, (byte) 0x55, (byte) 0xC3, (byte) 0x9F, (byte) 0x5A, (byte) 0x75 }; // some random salt
+	private static final int ITERATION_COUNT = 31;
 
 	private CipherEncryptURLParameter() {}
 
@@ -38,8 +42,8 @@ public class CipherEncryptURLParameter {
 		}
 		
 		try {
-
-			KeySpec keySpec = new PBEKeySpec(null, SALT, ITERATION_COUNT);
+			
+			KeySpec keySpec = new PBEKeySpec(SECRET_KEY, SALT, ITERATION_COUNT);
 			AlgorithmParameterSpec paramSpec = new PBEParameterSpec(SALT, ITERATION_COUNT);
 
 			SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
@@ -74,7 +78,7 @@ public class CipherEncryptURLParameter {
 
 			byte[] dec = Base64.decodeBase64(input.getBytes());
 
-			KeySpec keySpec = new PBEKeySpec(null, SALT, ITERATION_COUNT);
+			KeySpec keySpec = new PBEKeySpec(SECRET_KEY, SALT, ITERATION_COUNT);
 			AlgorithmParameterSpec paramSpec = new PBEParameterSpec(SALT, ITERATION_COUNT);
 
 			SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
@@ -93,14 +97,6 @@ public class CipherEncryptURLParameter {
 		}
 
 		return null;
-	}
-	
-	public static void main(String[] args) {
-		
-		String encriptada = CipherEncryptURLParameter.encrypt("999999999999999999999999");
-		System.out.println(encriptada);
-		String decriptada = CipherEncryptURLParameter.decrypt(encriptada);
-		System.out.println(decriptada);
 	}
 
 }

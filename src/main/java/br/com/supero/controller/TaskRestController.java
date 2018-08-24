@@ -25,7 +25,7 @@ public class TaskRestController {
 
 	@Autowired
 	private TaskService taskService;
-
+	
 	@GetMapping()
 	public List<TaskDTO> listar() {
 		List<TaskDTO> tasks = taskService.listar();
