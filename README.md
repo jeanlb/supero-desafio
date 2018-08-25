@@ -15,6 +15,7 @@ Frontend (supero-desafio-frontend):
 - Bibliotecas: jQuery (JavaScript), jQ-Router (JavaScript) e Purecss (CSS)
 - Requisições a API da aplicacao backend por meio de Ajax
 - Deixei o projeto do frontend dentro do projeto do backend apenas para não ter que fazer 2 repositórios, mas são aplicações diferentes.
+- Aplicação roda pelo protocolo HTTPS, e faz redirecionamento de HTTP para HTTPS
 - Os arquivos index.php e composer.json na raiz do projeto foram adicionados para a aplicação rodar no Heroku (pois este servidor usa PHP e Bowser), mas é possível rodar a aplicação normalmente em um servidor http simples (como o embutido no Python) sem precisar de um servidor PHP.
 Fontes: https://gist.github.com/wh1tney/2ad13aa5fbdd83f6a489, http://blog.teamtreehouse.com/deploy-static-site-heroku, https://devcenter.heroku.com/articles/getting-started-with-php#deploy-the-app
 

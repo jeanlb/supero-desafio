@@ -1,5 +1,7 @@
 package br.com.supero;
 
+
+
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +16,7 @@ public class SuperoDesafioApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SuperoDesafioApplication.class, args);
 	}
-	
+
 	/**
 	 * Configuracao de Bean utilizado para converter entity para dto e vice-versa.
 	 * Dependencia adicionada ao Maven (org.modelmapper).
@@ -33,7 +35,7 @@ public class SuperoDesafioApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/task/**").allowedOrigins("*")
-					.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT");
+				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT");
 			}
 		};
 	}
