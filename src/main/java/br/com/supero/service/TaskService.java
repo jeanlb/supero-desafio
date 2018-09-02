@@ -1,5 +1,7 @@
 package br.com.supero.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import br.com.supero.config.EnvironmentProperties;
 import br.com.supero.model.dao.TaskDAO;
 import br.com.supero.model.dto.TaskDTO;
 import br.com.supero.model.entity.Task;
@@ -37,7 +40,7 @@ public class TaskService {
 
 		Task taskInserida = new Task(task.getTitulo(), task.getDescricao());
 		taskInserida.setStatusConcluido(false);
-		taskInserida.setDataCriacao(new Date());
+		taskInserida.setDataCriacao(getDateFromTimeZoneId());
 
 		taskDAO.saveAndFlush(taskInserida);
 
@@ -52,7 +55,7 @@ public class TaskService {
 		taskAtualizada.setTitulo(task.getTitulo());
 		taskAtualizada.setDescricao(task.getDescricao());
 		taskAtualizada.setStatusConcluido(task.isStatusConcluido());
-		taskAtualizada.setDataModificacao(new Date());
+		taskAtualizada.setDataModificacao(getDateFromTimeZoneId());
 		
 		taskDAO.saveAndFlush(taskAtualizada);
 		
@@ -64,7 +67,7 @@ public class TaskService {
 		Task task = getTaskPorId(id);
 		
 		task.setStatusConcluido(statusConcluido);
-		task.setDataModificacao(new Date());
+		task.setDataModificacao(getDateFromTimeZoneId());
 		
 		taskDAO.saveAndFlush(task);
 	}
@@ -101,18 +104,50 @@ public class TaskService {
 		}
 	}
 	
+	/** 
+	 * Retorna a data e hora atual de uma timezone (fuso horario) definida 
+	 * como uma propriedade de configuracao. Util para evitar que a time 
+	 * zone da data a ser inserida/atualizada seja a do servidor.
+	 * 
+	 * Web Source: https://stackoverflow.com/questions/19431234/converting-between-java-time-localdatetime-and-java-util-date 
+	 * 
+	 * @return Date
+	 */
+	private Date getDateFromTimeZoneId() {
+		
+		String timezoneProperty = EnvironmentProperties.getProperty("timezone");
+		
+		// caso propriedade timezone nao tenha um valor, eh usada a timezone do servidor
+		ZoneId timezone = (timezoneProperty != null && !timezoneProperty.isEmpty())
+				? ZoneId.of(timezoneProperty) : ZoneId.systemDefault();
+
+		// converter LocalDateTime atual com timezone para Date
+        LocalDateTime localDateTime = LocalDateTime.now(timezone);
+        Date dateNow = java.sql.Timestamp.valueOf(localDateTime);
+        
+        return dateNow;
+	}
+	
 	/* ==== Conversores ==== */
 	
-	/** Converter entity para dto */
+	/** 
+	 * Converter entity para dto 
+	 * 
+	 * @return TaskDTO
+	 */
 	private TaskDTO convertToDto(Task task) {
 		TaskDTO taskDTO = modelMapper.map(task, TaskDTO.class);
 		return taskDTO;
 	}
 
-	/** Converter dto para entity */
+	/** 
+	 * Converter dto para entity 
+	 *  
+	 * @return Task
+	 */
 	private Task convertToEntity(TaskDTO taskDTO) {
 		Task task = modelMapper.map(taskDTO, Task.class);
 		return task;
 	}
-
+	
 }

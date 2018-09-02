@@ -4,9 +4,11 @@ import org.apache.catalina.Context;
 import org.apache.catalina.connector.Connector;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * Classe para fazer redirecionamento de requisicoes HTTP 
@@ -28,16 +30,17 @@ public class HttpsRedirectConfig {
 	private final static String REDIRECT_PATTERN = "/*";
 	private final static String CONNECTOR_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 	private final static String CONNECTOR_SCHEME = "http";
-	private final static int CONNECTOR_PORT = 8080;
-	private final static int CONNECTOR_REDIRECT_PORT = 8443;
+	
+	@Autowired
+	Environment environment;
 
 	@Bean
 	public TomcatServletWebServerFactory servletContainer() {
+		
 		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
 			
 			@Override
 			protected void postProcessContext(Context context) {
-				
 				SecurityConstraint securityConstraint = new SecurityConstraint();
 				securityConstraint.setUserConstraint(SECURITY_USER_CONSTRAINT);
 				
@@ -49,6 +52,7 @@ public class HttpsRedirectConfig {
 			}
 		};
 		tomcat.addAdditionalTomcatConnectors(redirectConnector());
+		
 		return tomcat;
 	}
 
@@ -56,9 +60,18 @@ public class HttpsRedirectConfig {
 		
 		Connector connector = new Connector(CONNECTOR_PROTOCOL);
 		connector.setScheme(CONNECTOR_SCHEME);
-		connector.setPort(CONNECTOR_PORT);
-		connector.setRedirectPort(CONNECTOR_REDIRECT_PORT);
 		connector.setSecure(false);
+		
+		/* Em componentes de configuracao (como esta classe) pegar as propriedades 
+		 * do ambiente (environment) por @Autowired, pois a classe EnvironmentProperties
+		 * foi definido como um componente de configuracao (@Configuration) e por isso
+		 * lanca um erro caso seja utilizado nesta classe 
+		 */
+		int httpPort = Integer.valueOf(environment.getProperty("server.http.port"));
+		int httpsRedirectPort = Integer.valueOf(environment.getProperty("server.port"));
+		
+		connector.setPort(httpPort);
+		connector.setRedirectPort(httpsRedirectPort);
 		
 		return connector;
 	}

@@ -14,6 +14,7 @@ public class Task {
 	// Atributos
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", updatable = false)
 	private Long id;
 	
 	private String titulo;
