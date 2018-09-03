@@ -27,7 +27,7 @@ public class SuperoDesafioApplication {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
-
+	
 	/** Habilitar o CORS globalmente */
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
@@ -39,4 +39,5 @@ public class SuperoDesafioApplication {
 			}
 		};
 	}
+
 }

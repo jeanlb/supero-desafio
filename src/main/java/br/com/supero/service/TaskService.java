@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.supero.config.EnvironmentProperties;
 import br.com.supero.model.dao.TaskDAO;
@@ -77,14 +78,19 @@ public class TaskService {
 		return convertToDto(task);
 	}
 	
+	/* Pq usar @Transactional na camada Service e nao no Repository ou Controller: 
+	 * https://stackoverflow.com/questions/18498115/why-use-transactional-with-service-instead-of-with-controller
+	 */
+	@Transactional(readOnly = true)
 	private Task getTaskPorId(Long id) {
 		Task task = taskDAO.findById(id).get();
 		return task;
 	}
 	
+	@Transactional(readOnly = true)
 	public List<TaskDTO> listar() {
 		
-		List<Task> tasks = taskDAO.findAll();
+		List<Task> tasks = taskDAO.findAllByOrderByIdDesc();
 		
 		List<TaskDTO> listTaskDTO = tasks.stream()
 				.map(task -> convertToDto(task))

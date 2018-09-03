@@ -12,6 +12,7 @@ function getApiUrl() {
         async:false,
         success: function(response) {
             apiUrl = response.apiUrl;
+            console.log(apiUrl);
         }
     });
 }
