@@ -30,5 +30,7 @@ Fontes: https://gist.github.com/wh1tney/2ad13aa5fbdd83f6a489, http://blog.teamtr
 
 ## Configurar Nginx para adicionar segurança SSL/HTTPS com Let's Encrypt no Ubuntu 16.04:
 
-- Web Source: https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+- Web Sources: 
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+https://calum.github.io/2018/01/20/Make-your-web-app-use-HTTPS-in-30-minutes.html
 - Para testes, criar dominio gratuito no dot.tk (freenom). Depois nas configuracoes do dominio, ir em Services > My Domains> Manage Domain > Manage Freenom DNS > Adicionar/editar os Records em branco e com WWW com o campo Target sendo o IP do Servidor (Com o LetsEncrypt nao funciona para ip local, tende de ser em um servidor publico, com os criados na AWS-EC2)  

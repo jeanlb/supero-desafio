@@ -29,7 +29,8 @@ import br.com.supero.config.EnvironmentProperties;
  */
 public class CipherEncryptURLParameter {
 	
-	private static final char[] SECRET_KEY = EnvironmentProperties.getProperty("secret.key").toCharArray();
+//	private static final char[] SECRET_KEY = EnvironmentProperties.getProperty("secret.key").toCharArray();
+	private static final char[] SECRET_KEY = "S3CR3TK3YtoURLP4R4M3T3R".toCharArray();
 	private static final byte[]	SALT = { (byte) 0x21, (byte) 0x21, (byte) 0xF0, (byte) 0x55, (byte) 0xC3, (byte) 0x9F, (byte) 0x5A, (byte) 0x75 }; // some random salt
 	private static final int ITERATION_COUNT = 31;
 

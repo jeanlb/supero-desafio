@@ -1,15 +1,17 @@
 package br.com.supero.model.dto;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import br.com.supero.encrypt.CipherEncryptURLParameter;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import br.com.supero.encrypt.CipherEncryptURLParameter;
+
 @JsonIgnoreProperties({ "id", "dataCriacao", "dataModificacao" }) // nao exibir estes atributos no json
-public class TaskDTO {
+public class TaskDTO implements Serializable {
 	
+	private static final long serialVersionUID = -3382642838816919153L;
 	private static final SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 	
 	// Atributos
@@ -19,6 +21,13 @@ public class TaskDTO {
 	private Boolean statusConcluido;
 	private Date dataCriacao;
 	private Date dataModificacao;
+	
+	public TaskDTO(String titulo, String descricao) {
+		this.titulo = titulo;
+		this.descricao = descricao;
+	}
+	
+	public TaskDTO() {}
 
 	/* 
 	 * Metodos para conversao e exibicao formatada de atributos no json.

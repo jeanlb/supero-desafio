@@ -1,0 +1,21 @@
+Install (Ubuntu):
+
+sudo apt-get update
+sudo apt-get install nginx
+sudo nginx -v
+
+Start:
+
+sudo service nginx start
+
+Stop:
+
+sudo service nginx stop
+
+Restart:
+
+sudo service nginx restart
+
+Status:
+
+sudo service nginx status

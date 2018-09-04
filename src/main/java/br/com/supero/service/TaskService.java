@@ -13,6 +13,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.supero.cache.Memcached;
 import br.com.supero.config.EnvironmentProperties;
 import br.com.supero.model.dao.TaskDAO;
 import br.com.supero.model.dto.TaskDTO;
@@ -33,6 +34,9 @@ public class TaskService {
 	private TaskDAO taskDAO;
 	
 	@Autowired
+	private Memcached cache;
+	
+	@Autowired
 	private ModelMapper modelMapper; // dependencia utilizada para converter entity para dto
 
 	public TaskDTO inserir(TaskDTO taskDTO) {
@@ -44,8 +48,11 @@ public class TaskService {
 		taskInserida.setDataCriacao(getDateFromTimeZoneId());
 
 		taskDAO.saveAndFlush(taskInserida);
+		
+		taskDTO = convertToDto(taskInserida);
+		cache.appendInCacheList("tasks", taskDTO);
 
-		return convertToDto(taskInserida);
+		return taskDTO;
 	}
 	
 	public TaskDTO atualizar(TaskDTO taskDTO) {		
@@ -60,6 +67,8 @@ public class TaskService {
 		
 		taskDAO.saveAndFlush(taskAtualizada);
 		
+		cache.deleteFromCache("tasks");
+		
 		return convertToDto(taskAtualizada);
 	}
 
@@ -71,6 +80,8 @@ public class TaskService {
 		task.setDataModificacao(getDateFromTimeZoneId());
 		
 		taskDAO.saveAndFlush(task);
+		
+		cache.deleteFromCache("tasks");
 	}
 	
 	public TaskDTO getTaskDTOPorId(Long id) {
@@ -88,13 +99,20 @@ public class TaskService {
 	}
 	
 	@Transactional(readOnly = true)
+	@SuppressWarnings("unchecked")
 	public List<TaskDTO> listar() {
 		
-		List<Task> tasks = taskDAO.findAllByOrderByIdDesc();
+		List<TaskDTO> listTaskDTO = (List<TaskDTO>) cache.getInCache("tasks");
 		
-		List<TaskDTO> listTaskDTO = tasks.stream()
-				.map(task -> convertToDto(task))
-				.collect(Collectors.toList());
+		if (listTaskDTO == null) {
+			List<Task> tasks = taskDAO.findAllByOrderByIdDesc();
+			
+			listTaskDTO = tasks.stream()
+					.map(task -> convertToDto(task))
+					.collect(Collectors.toList());
+			
+			cache.putInCache("tasks", listTaskDTO);
+		}
 		
 		return listTaskDTO;
 	}
@@ -102,6 +120,9 @@ public class TaskService {
 	public boolean deletar(Long id) {
 		try {
 			taskDAO.deleteById(id);
+			
+			cache.deleteFromCache("tasks");
+			
 			return true;
 		} catch (EmptyResultDataAccessException e) {
 			LoggerFactory.getLogger(this.getClass())
