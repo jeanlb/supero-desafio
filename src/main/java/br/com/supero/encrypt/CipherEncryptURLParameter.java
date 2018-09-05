@@ -11,7 +11,7 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.codec.binary.Base64;
 
-import br.com.supero.config.EnvironmentProperties;
+import br.com.supero.config.PropertiesLoader;
 
 /**
  * Simple encrypt/decrypt util for url parameters
@@ -27,31 +27,37 @@ import br.com.supero.config.EnvironmentProperties;
  * "There is no reason why this needs to be injected. This is just a function, it has no dependencies, so just 
  * call it. It can even be static if you want as it looks to be pure. One can write unit tests against this 
  * with no difficulty. If it is used in other classes, unit tests can still be written."
- *
+ * 
  */
 public class CipherEncryptURLParameter {
 	
-	private static String SECRET_KEY = "S3CR3TK3YtoURLP4R4M3T3R";
+	private static String SECRET_KEY;
 	private static final byte[]	SALT = { (byte) 0x21, (byte) 0x21, (byte) 0xF0, (byte) 0x55, (byte) 0xC3, (byte) 0x9F, (byte) 0x5A, (byte) 0x75 }; // some random salt
 	private static final int ITERATION_COUNT = 31;
+	private volatile static CipherEncryptURLParameter instance;
 	
-	private static EnvironmentProperties environmentProperties;
-	 
-    public static void setEnvironmentProperties(EnvironmentProperties environmentProperties) {
-    	CipherEncryptURLParameter.environmentProperties = environmentProperties;
-    }
-
-	private CipherEncryptURLParameter() {}
-
-	public static String encrypt(String input) {
+	public static CipherEncryptURLParameter getInstance() {
+		
+	    if (instance == null) {
+	        synchronized (CipherEncryptURLParameter.class) {
+	            if (instance == null) 
+	            	instance = new CipherEncryptURLParameter();
+	        }
+	    }
+	    return instance;
+	}
+	
+	private CipherEncryptURLParameter() {
+		SECRET_KEY = PropertiesLoader.getProperty("secret.key");
+	}
+	
+	public String encrypt(String input) {
 		
 		if (input == null) {
 			throw new IllegalArgumentException();
 		}
 		
 		try {
-			
-			SECRET_KEY = environmentProperties != null ? environmentProperties.getSecretKey() : SECRET_KEY;
 			
 			KeySpec keySpec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT, ITERATION_COUNT);
 			AlgorithmParameterSpec paramSpec = new PBEParameterSpec(SALT, ITERATION_COUNT);
@@ -76,15 +82,13 @@ public class CipherEncryptURLParameter {
 		return "";
 	}
 
-	public static String decrypt(String inputEncripted) {
+	public String decrypt(String inputEncripted) {
 		
 		if (inputEncripted == null) {
 			return null;
 		}
 		
 		try {
-			
-			SECRET_KEY = environmentProperties != null ? environmentProperties.getSecretKey() : SECRET_KEY;
 			
 			String input = inputEncripted.replace("%0A", "\n").replace("%25", "%").replace('_', '/').replace('-', '+');
 

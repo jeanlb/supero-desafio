@@ -35,7 +35,9 @@ public class TaskRestController {
 	@GetMapping("/{id}")
 	public TaskDTO getTaskPorId(@PathVariable(value = "id") String idEncrypted) {
 		
-		Long id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
+		Long id = Long.valueOf(CipherEncryptURLParameter
+					.getInstance().decrypt(idEncrypted));
+		
 		TaskDTO task = taskService.getTaskDTOPorId(id);
         return task;
     }
@@ -58,7 +60,8 @@ public class TaskRestController {
 	public ResponseEntity<?> atualizarStatus(@PathVariable(value = "id") String idEncrypted, 
 			@PathVariable(value = "statusConcluido") Boolean statusConcluido) {
 		
-		Long id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
+		Long id = Long.valueOf(CipherEncryptURLParameter
+					.getInstance().decrypt(idEncrypted.toString()));
 		
 		taskService.atualizarStatus(id, statusConcluido);
 		
@@ -71,7 +74,9 @@ public class TaskRestController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deletar(@PathVariable(value = "id") String idEncrypted) {
 	    
-		Long id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncrypted.toString()));
+		Long id = Long.valueOf(CipherEncryptURLParameter
+					.getInstance().decrypt(idEncrypted));
+		
 		boolean foiDeletada = taskService.deletar(id);
 		
 		if (!foiDeletada)

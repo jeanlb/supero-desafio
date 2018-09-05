@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,14 +31,36 @@ public class Memcached {
 	@Autowired
 	private EnvironmentProperties environmentProperties;
 	
-	public void putInCache(String key, Object value) {
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	/*
+	 * O metodo na classe @Component que tiver a anotacao @PostConstruct
+	 * eh chamado apos o Spring inicializar todas as dependencias da aplicacao,
+	 * incluindo as classe de configuracao, tal como EnvironmentProperties.
+	 * 
+	 * Web Source: https://medium.com/@dmarko484/spring-boot-startup-init-through-postconstruct-765b5a5c1d29
+	 */
+	@PostConstruct
+	public void init() {
+		log.info("Memcached connection initializing..");
 		checkConnection();
+	}
+	
+	/*
+	 * Metodo com a anotacao @PreDestroy eh chamado antes da aplicacao ser encerrada
+	 */
+	@PreDestroy
+    public void destroy() {
+		log.info("Memcached connection shutdowning..");
+    	disconnect(); // desconectar aplicacao do servidor de cache
+    }
+	
+	public void putInCache(String key, Object value) {
 		memcachedClient.set(key, 3600, value); // (3600 - expiry time in seconds)
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void appendInCache(String key, Object value) {
-		checkConnection();
 		
 		Object cachedObject = getInCache(key);
 		
@@ -47,12 +74,10 @@ public class Memcached {
 	}
 
 	public Object getInCache(String key) {
-		checkConnection();
 		return memcachedClient.get(key);
 	}
 
 	public void deleteFromCache(String key) {
-		checkConnection();
 		memcachedClient.delete(key);
 	}
 	
