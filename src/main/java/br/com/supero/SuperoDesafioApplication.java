@@ -9,12 +9,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import br.com.supero.cache.Memcached;
+import br.com.supero.config.EnvironmentProperties;
+import br.com.supero.encrypt.CipherEncryptURLParameter;
 
 @SpringBootApplication
 public class SuperoDesafioApplication {
@@ -27,7 +30,6 @@ public class SuperoDesafioApplication {
 	 * Configuracao de Bean utilizado para converter entity para dto e vice-versa.
 	 * Dependencia adicionada ao Maven (org.modelmapper).
 	 * Fonte: https://www.baeldung.com/entity-to-and-from-dto-for-a-java-spring-application
-	 * 
 	 */
 	@Bean
 	public ModelMapper modelMapper() {
@@ -60,17 +62,23 @@ public class SuperoDesafioApplication {
 	private class OnInitShutdownApplication {
 		
 		@Autowired
-		private Memcached cache; // com a injecao de dependencia o cache eh inicializado quando a aplicacao eh iniciada
+		private ApplicationContext context; // pegar contexto da aplicacao para pegar componentes gerenciados pelo Spring posteriormente
 		
         @PostConstruct
         public void init() {
-            System.out.println("Initialing Spring Boot TaskList application.. Memcached connection initialized");
+            System.out.println("Initialing Spring Boot TaskList application..");
+            
+            /* Injetar as propriedades do ambiente na classe estatica e nao componente CipherEncryptURLParameter 
+             * Adapted from: https://better-coding.com/spring-how-to-autowire-bean-in-a-static-class/
+             */
+            EnvironmentProperties environmentProperties = context.getBean(EnvironmentProperties.class);
+            CipherEncryptURLParameter.setEnvironmentProperties(environmentProperties);
         }
 
         @PreDestroy
         public void destroy() {
         	System.out.println("Shutdowning Spring Boot TaskList application.. Memcached connection shutdowning..");
-            cache.disconnect(); // desconectar aplicacao do servidor de cache
+        	context.getBean(Memcached.class).disconnect(); // desconectar aplicacao do servidor de cache
         }
     }
 	

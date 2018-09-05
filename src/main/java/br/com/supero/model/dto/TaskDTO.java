@@ -43,7 +43,10 @@ public class TaskDTO implements Serializable {
 	 * @return String
 	 */
 	public String getIdEncriptado() {
-		return CipherEncryptURLParameter.encrypt(String.valueOf(this.id));
+		if (this.id != null) {
+			return CipherEncryptURLParameter.encrypt(String.valueOf(this.id));
+		}
+		return null;
 	}
 	
 	/**
@@ -55,7 +58,9 @@ public class TaskDTO implements Serializable {
 	 * @param idEncriptado
 	 */
 	public void setIdEncriptado(String idEncriptado) {
-		this.id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncriptado.toString()));
+		if (idEncriptado != null && !idEncriptado.isEmpty()) {
+			this.id = Long.valueOf(CipherEncryptURLParameter.decrypt(idEncriptado.toString()));
+		}
 	}
 	
 	public String getDataCriacaoFormatada() {

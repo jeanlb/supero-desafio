@@ -2,13 +2,12 @@ package br.com.supero.cache;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.supero.model.dto.TaskDTO;
+import br.com.supero.config.EnvironmentProperties;
 import net.spy.memcached.MemcachedClient;
 
 /**
@@ -22,34 +21,49 @@ import net.spy.memcached.MemcachedClient;
 @Component
 public class Memcached {
 
-	private String memcachedHost = "localhost";
-	private int memcachedPort = 11211;
 	private MemcachedClient memcachedClient;
 	
-	public Memcached() {
-		connect();
-	}
-
+	@Autowired
+	private EnvironmentProperties environmentProperties;
+	
 	public void putInCache(String key, Object value) {
+		checkConnection();
 		memcachedClient.set(key, 3600, value); // (3600 - expiry time in seconds)
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void appendInCacheList(String key, Object value) {
-		List<Object> cachedList = (List<Object>) getInCache(key);
-		cachedList.add(0, value);
-		memcachedClient.replace(key, 3600, cachedList);
+	public void appendInCache(String key, Object value) {
+		checkConnection();
+		
+		Object cachedObject = getInCache(key);
+		
+		if (cachedObject instanceof List) {
+			List<Object> cachedList = (List<Object>) cachedObject;
+			cachedList.add(0, value);
+			memcachedClient.replace(key, 3600, cachedList);
+		} else {
+			memcachedClient.append(key, value);
+		}
 	}
 
 	public Object getInCache(String key) {
+		checkConnection();
 		return memcachedClient.get(key);
 	}
 
 	public void deleteFromCache(String key) {
+		checkConnection();
 		memcachedClient.delete(key);
 	}
 	
-	public void connect() {
+	/**
+	 * Instanciar MemcachedClient e criar a conexao com o servidor Memcached.
+	 */
+	private void connect() {
+		
+		String memcachedHost = environmentProperties.getMemcachedHost();
+		int memcachedPort = environmentProperties.getMemcachedPort();
+		
 		try {
 			memcachedClient = new MemcachedClient(new InetSocketAddress(
 					memcachedHost, memcachedPort));
@@ -58,11 +72,17 @@ public class Memcached {
 		}
 	}
 	
+	private void checkConnection() {
+		boolean isConnected = (memcachedClient != null 
+				&& memcachedClient.getConnection().isAlive());
+		if (!isConnected) connect();
+	}
+	
 	public void disconnect() {
 		memcachedClient.shutdown();
 	}
 
-	
+	/*
 	public static void main(String[] args) {
 		
 		Memcached test = new Memcached();
@@ -103,5 +123,5 @@ public class Memcached {
 		
 		test.disconnect();
 	}
-	
+	*/
 }

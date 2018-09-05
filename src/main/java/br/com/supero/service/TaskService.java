@@ -34,10 +34,14 @@ public class TaskService {
 	private TaskDAO taskDAO;
 	
 	@Autowired
+	private EnvironmentProperties environmentProperties;
+	
+	@Autowired
 	private Memcached cache;
 	
 	@Autowired
 	private ModelMapper modelMapper; // dependencia utilizada para converter entity para dto
+	
 
 	public TaskDTO inserir(TaskDTO taskDTO) {
 		
@@ -50,7 +54,7 @@ public class TaskService {
 		taskDAO.saveAndFlush(taskInserida);
 		
 		taskDTO = convertToDto(taskInserida);
-		cache.appendInCacheList("tasks", taskDTO);
+		cache.appendInCache("tasks", taskDTO);
 
 		return taskDTO;
 	}
@@ -89,7 +93,8 @@ public class TaskService {
 		return convertToDto(task);
 	}
 	
-	/* Pq usar @Transactional na camada Service e nao no Repository ou Controller: 
+	/* 
+	 * Pq usar @Transactional na camada Service e nao no Repository ou Controller: 
 	 * https://stackoverflow.com/questions/18498115/why-use-transactional-with-service-instead-of-with-controller
 	 */
 	@Transactional(readOnly = true)
@@ -142,7 +147,7 @@ public class TaskService {
 	 */
 	private Date getDateFromTimeZoneId() {
 		
-		String timezoneProperty = EnvironmentProperties.getProperty("timezone");
+		String timezoneProperty = environmentProperties.getTimeZone();
 		
 		// caso propriedade timezone nao tenha um valor, eh usada a timezone do servidor
 		ZoneId timezone = (timezoneProperty != null && !timezoneProperty.isEmpty())

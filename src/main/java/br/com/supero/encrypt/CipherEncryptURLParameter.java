@@ -15,7 +15,9 @@ import br.com.supero.config.EnvironmentProperties;
 
 /**
  * Simple encrypt/decrypt util for url parameters
- * Web Source: https://gist.github.com/cxubrix/4316635
+ * Web Sources: 
+ * https://gist.github.com/cxubrix/4316635
+ * https://better-coding.com/spring-how-to-autowire-bean-in-a-static-class/
  * 
  * Ps.: Este codigo teve algumas adaptacoes em relacao ao original 
  * 
@@ -29,10 +31,15 @@ import br.com.supero.config.EnvironmentProperties;
  */
 public class CipherEncryptURLParameter {
 	
-//	private static final char[] SECRET_KEY = EnvironmentProperties.getProperty("secret.key").toCharArray();
-	private static final char[] SECRET_KEY = "S3CR3TK3YtoURLP4R4M3T3R".toCharArray();
+	private static String SECRET_KEY = "S3CR3TK3YtoURLP4R4M3T3R";
 	private static final byte[]	SALT = { (byte) 0x21, (byte) 0x21, (byte) 0xF0, (byte) 0x55, (byte) 0xC3, (byte) 0x9F, (byte) 0x5A, (byte) 0x75 }; // some random salt
 	private static final int ITERATION_COUNT = 31;
+	
+	private static EnvironmentProperties environmentProperties;
+	 
+    public static void setEnvironmentProperties(EnvironmentProperties environmentProperties) {
+    	CipherEncryptURLParameter.environmentProperties = environmentProperties;
+    }
 
 	private CipherEncryptURLParameter() {}
 
@@ -44,7 +51,9 @@ public class CipherEncryptURLParameter {
 		
 		try {
 			
-			KeySpec keySpec = new PBEKeySpec(SECRET_KEY, SALT, ITERATION_COUNT);
+			SECRET_KEY = environmentProperties != null ? environmentProperties.getSecretKey() : SECRET_KEY;
+			
+			KeySpec keySpec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT, ITERATION_COUNT);
 			AlgorithmParameterSpec paramSpec = new PBEParameterSpec(SALT, ITERATION_COUNT);
 
 			SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
@@ -74,12 +83,14 @@ public class CipherEncryptURLParameter {
 		}
 		
 		try {
-
+			
+			SECRET_KEY = environmentProperties != null ? environmentProperties.getSecretKey() : SECRET_KEY;
+			
 			String input = inputEncripted.replace("%0A", "\n").replace("%25", "%").replace('_', '/').replace('-', '+');
 
 			byte[] dec = Base64.decodeBase64(input.getBytes());
 
-			KeySpec keySpec = new PBEKeySpec(SECRET_KEY, SALT, ITERATION_COUNT);
+			KeySpec keySpec = new PBEKeySpec(SECRET_KEY.toCharArray(), SALT, ITERATION_COUNT);
 			AlgorithmParameterSpec paramSpec = new PBEParameterSpec(SALT, ITERATION_COUNT);
 
 			SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);

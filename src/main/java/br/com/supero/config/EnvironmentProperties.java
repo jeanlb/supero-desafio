@@ -1,38 +1,58 @@
 package br.com.supero.config;
 
-import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.Environment;
 
 /**
  * Classe para acessar as propriedades da aplicacao (application.properties).
- * Util para classes que nao estejam sendo gerenciadas pelo spring e que
- * necessitem, por exemplo, pegar o valor de alguma propriedade no application.properties
  * 
- * Web Source: https://stackoverflow.com/questions/19454289/spring-boot-environment-autowired-throws-nullpointerexception
- * https://www.moreofless.co.uk/spring-mvc-java-autowired-component-null-repository-service/
+ * Web Source: https://better-coding.com/spring-how-to-autowire-bean-in-a-static-class/
  */
 @Configuration
-@PropertySource(value = { "classpath:application.properties" }, ignoreResourceNotFound = false)
-public class EnvironmentProperties implements EnvironmentAware {
+public class EnvironmentProperties {
 	
-	private static Environment environment;
+	@Value("${secret.key}")
+	private String secretKey;
 	
-	public static String getProperty(String key) {
-		return environment.getProperty(key);
+	@Value("${timezone}")
+	private String timeZone;
+	
+	@Value("${memcached.host}")
+	private String memcachedHost;
+	
+	@Value("${memcached.port}")
+	private String memcachedPort;
+
+	public String getSecretKey() {
+		return secretKey;
 	}
 
-	@Override
-	public void setEnvironment(Environment env) {
-		environment = env;
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
 	}
-	
-	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
-	    return new PropertySourcesPlaceholderConfigurer();
+
+	public String getTimeZone() {
+		return timeZone;
+	}
+
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+
+	public String getMemcachedHost() {
+		return memcachedHost;
+	}
+
+	public void setMemcachedHost(String memcachedHost) {
+		this.memcachedHost = memcachedHost;
+	}
+
+	public int getMemcachedPort() {
+		return Integer.valueOf(memcachedPort);
+	}
+
+	public void setMemcachedPort(String memcachedPort) {
+		this.memcachedPort = memcachedPort;
 	}
 
 }
