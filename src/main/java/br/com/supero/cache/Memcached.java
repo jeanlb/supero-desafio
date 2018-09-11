@@ -7,12 +7,15 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.supero.config.EnvironmentProperties;
+import br.com.supero.model.dto.AbstractDTO;
+import br.com.supero.model.dto.AbstractDTOFactory;
 import net.spy.memcached.MemcachedClient;
 
 /**
@@ -27,9 +30,13 @@ import net.spy.memcached.MemcachedClient;
 public class Memcached {
 
 	private MemcachedClient memcachedClient;
+	private int expirationTime;
 	
 	@Autowired
 	private EnvironmentProperties environmentProperties;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -44,6 +51,10 @@ public class Memcached {
 	public void init() {
 		log.info("Memcached connection initializing..");
 		checkConnection();
+		this.expirationTime = environmentProperties.getMemcachedExpirationTime();
+		
+		// setar instancia de ModelMapper na classe AbstractDTOFactory (pois esta nao eh gerenciada pelo Spring)
+		AbstractDTOFactory.setModelMapper(modelMapper);
 	}
 	
 	/*
@@ -56,7 +67,7 @@ public class Memcached {
     }
 	
 	public void putInCache(String key, Object value) {
-		memcachedClient.set(key, 3600, value); // (3600 - expiry time in seconds)
+		memcachedClient.set(key, this.expirationTime, value);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -67,7 +78,7 @@ public class Memcached {
 		if (cachedObject instanceof List) {
 			List<Object> cachedList = (List<Object>) cachedObject;
 			cachedList.add(0, value);
-			memcachedClient.replace(key, 3600, cachedList);
+			memcachedClient.replace(key, this.expirationTime, cachedList);
 		} else {
 			memcachedClient.append(key, value);
 		}
@@ -77,7 +88,32 @@ public class Memcached {
 		return memcachedClient.get(key);
 	}
 
-	public void deleteFromCache(String key) {
+	@SuppressWarnings("unchecked")
+	public void deleteFromCacheById(String key, Long id) {
+		Object cachedObject = getInCache(key);
+		
+		if (cachedObject instanceof List) {
+			
+			// converter lista de objetos para lista de AbstractDTO
+			List<AbstractDTO> dtoList = AbstractDTOFactory
+					.createAbstractDTOFromObjectList((List<Object>) cachedObject);
+			
+			// remover elemento (AbstractDTO) da lista
+			dtoList.removeIf(dto -> dto.getId().equals(id));
+			
+			// atualizar cache 
+			memcachedClient.replace(key, this.expirationTime, dtoList);
+		} else {
+			clearCache(key);
+		}
+	}
+	
+	/**
+	 * Limpar o cache passando uma chave identificadora do cache
+	 * 
+	 * @param key
+	 */
+	public void clearCache(String key) {
 		memcachedClient.delete(key);
 	}
 	
@@ -97,16 +133,23 @@ public class Memcached {
 		}
 	}
 	
+	/**
+	 * Checar se ha conexao aberta e se nao houver conectar
+	 */
 	private void checkConnection() {
 		boolean isConnected = (memcachedClient != null 
 				&& memcachedClient.getConnection().isAlive());
 		if (!isConnected) connect();
 	}
 	
-	public void disconnect() {
+	/**
+	 * Desconectar do servidor Memcached.
+	 */
+	private void disconnect() {
+//		memcachedClient.flush(); // limpa todos os registros no cache
 		memcachedClient.shutdown();
 	}
-
+	
 	/*
 	public static void main(String[] args) {
 		

@@ -71,7 +71,7 @@ public class TaskService {
 		
 		taskDAO.saveAndFlush(taskAtualizada);
 		
-		cache.deleteFromCache("tasks");
+		cache.clearCache("tasks");
 		
 		return convertToDto(taskAtualizada);
 	}
@@ -85,7 +85,7 @@ public class TaskService {
 		
 		taskDAO.saveAndFlush(task);
 		
-		cache.deleteFromCache("tasks");
+		cache.clearCache("tasks");
 	}
 	
 	public TaskDTO getTaskDTOPorId(Long id) {
@@ -109,7 +109,7 @@ public class TaskService {
 		
 		List<TaskDTO> listTaskDTO = (List<TaskDTO>) cache.getInCache("tasks");
 		
-		if (listTaskDTO == null) {
+		if (listTaskDTO == null || listTaskDTO.isEmpty()) {
 			List<Task> tasks = taskDAO.findAllByOrderByIdDesc();
 			
 			listTaskDTO = tasks.stream()
@@ -126,7 +126,7 @@ public class TaskService {
 		try {
 			taskDAO.deleteById(id);
 			
-			cache.deleteFromCache("tasks");
+			cache.deleteFromCacheById("tasks", id);
 			
 			return true;
 		} catch (EmptyResultDataAccessException e) {

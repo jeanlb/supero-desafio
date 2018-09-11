@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import br.com.supero.encrypt.CipherEncryptURLParameter;
 
 @JsonIgnoreProperties({ "id", "dataCriacao", "dataModificacao" }) // nao exibir estes atributos no json
-public class TaskDTO implements Serializable {
+public class TaskDTO implements AbstractDTO, Serializable {
 	
 	private static final long serialVersionUID = -3382642838816919153L;
 	private static final SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -28,7 +28,7 @@ public class TaskDTO implements Serializable {
 	}
 	
 	public TaskDTO() {}
-
+	
 	/* 
 	 * Metodos para conversao e exibicao formatada de atributos no json.
 	 * 
@@ -84,6 +84,8 @@ public class TaskDTO implements Serializable {
 	}
 	
 	// Getters and Setters
+	
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -130,6 +132,13 @@ public class TaskDTO implements Serializable {
 
 	public void setStatusConcluido(Boolean concluido) {
 		this.statusConcluido = concluido;
+	}
+	
+	@Override
+	public String toString() {
+		return "TaskDTO ID: " + id
+				+ " titulo: " + titulo
+				+ " descricao: " + descricao;
 	}
 	
 }

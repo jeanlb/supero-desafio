@@ -11,9 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EnvironmentProperties {
 	
-	@Value("${secret.key}")
-	private String secretKey;
-	
 	@Value("${timezone}")
 	private String timeZone;
 	
@@ -22,17 +19,14 @@ public class EnvironmentProperties {
 	
 	@Value("${memcached.port}")
 	private String memcachedPort;
-
-	public String getSecretKey() {
-		return secretKey;
-	}
-
-	public void setSecretKey(String secretKey) {
-		this.secretKey = secretKey;
-	}
+	
+	@Value("${memcached.expiration.time}")
+	private String memcachedExpirationTime;
 
 	public String getTimeZone() {
-		return timeZone;
+		String defaultTimeZone = "America/Sao_Paulo";
+		return (timeZone != null && !timeZone.isEmpty())
+				? timeZone.trim() : defaultTimeZone;
 	}
 
 	public void setTimeZone(String timeZone) {
@@ -40,7 +34,9 @@ public class EnvironmentProperties {
 	}
 
 	public String getMemcachedHost() {
-		return memcachedHost;
+		String defaultHost = "localhost";
+		return (memcachedHost != null && !memcachedHost.isEmpty())
+				? memcachedHost.trim() : defaultHost;
 	}
 
 	public void setMemcachedHost(String memcachedHost) {
@@ -48,11 +44,25 @@ public class EnvironmentProperties {
 	}
 
 	public int getMemcachedPort() {
-		return Integer.valueOf(memcachedPort);
+		int defaultPort = 11211;
+		return (memcachedPort != null && !memcachedPort.isEmpty())
+				? Integer.valueOf(memcachedPort.trim())
+						: defaultPort;
 	}
 
 	public void setMemcachedPort(String memcachedPort) {
 		this.memcachedPort = memcachedPort;
+	}
+	
+	public int getMemcachedExpirationTime() {
+		int defaultExpirationTime = 3600;
+		return (memcachedExpirationTime != null && !memcachedExpirationTime.isEmpty())
+				? Integer.valueOf(memcachedExpirationTime.trim())
+						: defaultExpirationTime;
+	}
+
+	public void setMemcachedExpirationTime(String memcachedExpirationTime) {
+		this.memcachedExpirationTime = memcachedExpirationTime;
 	}
 
 }
