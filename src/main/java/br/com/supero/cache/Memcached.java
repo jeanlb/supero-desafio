@@ -3,11 +3,11 @@ package br.com.supero.cache;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class Memcached {
 	private EnvironmentProperties environmentProperties;
 	
 	@Autowired
-	private ModelMapper modelMapper;
+	private AbstractDTOFactory abstractDTOFactory;
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -52,9 +52,6 @@ public class Memcached {
 		log.info("Memcached connection initializing..");
 		checkConnection();
 		this.expirationTime = environmentProperties.getMemcachedExpirationTime();
-		
-		// setar instancia de ModelMapper na classe AbstractDTOFactory (pois esta nao eh gerenciada pelo Spring)
-		AbstractDTOFactory.setModelMapper(modelMapper);
 	}
 	
 	/*
@@ -66,10 +63,20 @@ public class Memcached {
     	disconnect(); // desconectar aplicacao do servidor de cache
     }
 	
+	/**
+	 * Criar cache
+	 * 
+	 * @param key, value
+	 */
 	public void putInCache(String key, Object value) {
 		memcachedClient.set(key, this.expirationTime, value);
 	}
 	
+	/**
+	 * Adicionar ao cache
+	 * 
+	 * @param key, value
+	 */
 	@SuppressWarnings("unchecked")
 	public void appendInCache(String key, Object value) {
 		
@@ -83,19 +90,87 @@ public class Memcached {
 			memcachedClient.append(key, value);
 		}
 	}
-
-	public Object getInCache(String key) {
-		return memcachedClient.get(key);
-	}
-
+	
+	/**
+	 * Atualizar cache
+	 * 
+	 * @param key, value
+	 */
 	@SuppressWarnings("unchecked")
-	public void deleteFromCacheById(String key, Long id) {
+	public void updateCache(String key, Object value) {
 		Object cachedObject = getInCache(key);
 		
 		if (cachedObject instanceof List) {
 			
 			// converter lista de objetos para lista de AbstractDTO
-			List<AbstractDTO> dtoList = AbstractDTOFactory
+			List<AbstractDTO> dtoList = abstractDTOFactory
+					.createAbstractDTOFromObjectList((List<Object>) cachedObject);
+			
+			AbstractDTO cachedDTO = abstractDTOFactory.createAbstractDTOFromObject(value);
+			
+			// atualizar elemento (AbstractDTO) na lista
+			dtoList = dtoList.stream()
+				    .map(dto -> dto.getId().equals(cachedDTO.getId()) ? cachedDTO : dto)
+				    .collect(Collectors.toList());
+			
+			// atualizar cache 
+			memcachedClient.replace(key, this.expirationTime, dtoList);
+		} else {
+			clearCache(key);
+		}
+	}
+
+	/**
+	 * Retornar elementos (values) do cache
+	 * 
+	 * @param key
+	 * @return Object
+	 */
+	public Object getInCache(String key) {
+		return memcachedClient.get(key);
+	}
+	
+	/**
+	 * Retornar elemento (value) contido no cache
+	 * 
+	 * @param key, id
+	 * @return Object
+	 */
+	@SuppressWarnings("unchecked")
+	public Object getInCache(String key, Long id) {
+		Object cachedObject = getInCache(key);
+		
+		if (cachedObject instanceof List)  {
+			
+			// converter lista de objetos para lista de AbstractDTO
+			List<AbstractDTO> dtoList = abstractDTOFactory
+					.createAbstractDTOFromObjectList((List<Object>) cachedObject);
+			
+			// pegar elemento no cache cujo id seja igual ao passado como parametro
+			cachedObject = dtoList.stream()
+				    .filter(dto -> dto.getId().equals(id))
+				    .findFirst()
+				    .get();
+			
+			return cachedObject;
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Deletar elemento do cache
+	 * 
+	 * @param key, value
+	 */
+	@SuppressWarnings("unchecked")
+	public void deleteFromCache(String key, Long id) {
+		Object cachedObject = getInCache(key);
+		
+		if (cachedObject instanceof List) {
+			
+			// converter lista de objetos para lista de AbstractDTO
+			List<AbstractDTO> dtoList = abstractDTOFactory
 					.createAbstractDTOFromObjectList((List<Object>) cachedObject);
 			
 			// remover elemento (AbstractDTO) da lista

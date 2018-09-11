@@ -138,7 +138,8 @@ public class TaskDTO implements AbstractDTO, Serializable {
 	public String toString() {
 		return "TaskDTO ID: " + id
 				+ " titulo: " + titulo
-				+ " descricao: " + descricao;
+				+ " descricao: " + descricao
+				+ " statusConcluido: " + statusConcluido;
 	}
 	
 }

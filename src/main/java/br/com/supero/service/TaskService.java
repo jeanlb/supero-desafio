@@ -71,9 +71,10 @@ public class TaskService {
 		
 		taskDAO.saveAndFlush(taskAtualizada);
 		
-		cache.clearCache("tasks");
+		taskDTO = convertToDto(taskAtualizada);
+		cache.updateCache("tasks", taskDTO);
 		
-		return convertToDto(taskAtualizada);
+		return taskDTO;
 	}
 
 	public void atualizarStatus(Long id, Boolean statusConcluido) {
@@ -85,12 +86,20 @@ public class TaskService {
 		
 		taskDAO.saveAndFlush(task);
 		
-		cache.clearCache("tasks");
+		TaskDTO taskDTO = convertToDto(task);
+		cache.updateCache("tasks", taskDTO);
 	}
 	
 	public TaskDTO getTaskDTOPorId(Long id) {
-		Task task = getTaskPorId(id);
-		return convertToDto(task);
+		
+		TaskDTO taskDTO = (TaskDTO) cache.getInCache("tasks", id);
+		
+		if (taskDTO == null) {
+			Task task = getTaskPorId(id);
+			taskDTO = convertToDto(task);
+		}
+		
+		return taskDTO;
 	}
 	
 	/* 
@@ -126,7 +135,7 @@ public class TaskService {
 		try {
 			taskDAO.deleteById(id);
 			
-			cache.deleteFromCacheById("tasks", id);
+			cache.deleteFromCache("tasks", id);
 			
 			return true;
 		} catch (EmptyResultDataAccessException e) {

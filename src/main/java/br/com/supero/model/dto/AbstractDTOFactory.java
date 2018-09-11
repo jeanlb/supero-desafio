@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Fabrica para criacao de AbstractDTO
@@ -11,19 +13,13 @@ import org.modelmapper.ModelMapper;
  * @author jean
  *
  */
+@Component
 public class AbstractDTOFactory {
 	
-	private static ModelMapper modelMapper; // dependencia utilizada para converter tipos de objetos
+	@Autowired
+	private ModelMapper modelMapper; // dependencia utilizada para converter tipos de objetos
 	
-	/* 
-	 * Metodo utilizado para que classes gerenciadas pelo Spring injetem a dependencia 
-	 * ModelMapper nesta classe, uma vez que ela eh estatica e nao gerenciada pelo Spring
-	 */
-	public static void setModelMapper(ModelMapper modelMapper) {
-		AbstractDTOFactory.modelMapper = modelMapper;
-	}
-	
-	public static List<AbstractDTO> createAbstractDTOFromObjectList(List<Object> objects) {
+	public List<AbstractDTO> createAbstractDTOFromObjectList(List<Object> objects) {
 		
 		List<AbstractDTO> dtoList = new ArrayList<AbstractDTO>();
 		
@@ -35,7 +31,7 @@ public class AbstractDTOFactory {
 		return dtoList;
 	}
 	
-	public static AbstractDTO createAbstractDTOFromObject(Object object) {
+	public AbstractDTO createAbstractDTOFromObject(Object object) {
 		
 		AbstractDTO dto = null;
 		
@@ -43,7 +39,6 @@ public class AbstractDTOFactory {
 		
 			case "br.com.supero.model.dto.TaskDTO":
 				dto = convertObjectToTaskDTO(object);
-				System.out.println("TaskDTO >>>> " + dto.toString());
 				break;
 	
 			default:
@@ -59,7 +54,7 @@ public class AbstractDTOFactory {
 	 * @param object
 	 * @return TaskDTO
 	 */
-	private static TaskDTO convertObjectToTaskDTO(Object object) {
+	private TaskDTO convertObjectToTaskDTO(Object object) {
 		TaskDTO taskDTO = modelMapper.map(object, TaskDTO.class);
 		return taskDTO;
 	}
