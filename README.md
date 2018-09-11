@@ -9,6 +9,7 @@ Backend (supero-desafio):
 - Padrão MVC com DTO (incluindo conversão de entity para dto e dto para entity), Service e DAO
 - Restful
 - MySQL
+- Memcached (Java client: spymemcached)
 
 Frontend (supero-desafio-frontend):
 - HTML5, CSS, JavaScript
@@ -20,8 +21,9 @@ Fontes: https://gist.github.com/wh1tney/2ad13aa5fbdd83f6a489, http://blog.teamtr
 
 ## Como rodar:
 
-- Importe para o MySQL o script em supero-desafio\database\schema.sql 
-- No arquivo application.properties coloque a senha do seu banco (propriedade spring.datasource.password)
+- Importe para o MySQL o script em supero-desafio\database\schema.sql
+- Servidor Memcached (cache) instalado
+- No arquivo application.properties coloque a senha do seu banco (propriedade spring.datasource.password). Neste arquivo também estão as configurações do servidor de cache (memcached.host) e porta (memcached.port)
 - Gere o .jar do projeto (estando dentro da pasta supero-desafio) com o comando: mvn clean install package -DskipTests
 - Rode o .jar do projeto localizado na pasta supero-desafio\target. A aplicação backend por padrão rodará (caso seja local) em: http://localhost:8080
 - Para o frontend utilize um servidor Web para levantar a aplicação. Localmente utilizei o servidor Web embutido no Python (caso o Python esteja instalado e configurado em seu PC/notebook). Exemplo: entre na pasta supero-desafio-frontend e no terminal/console execute o comando: python -m http.server

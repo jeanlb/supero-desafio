@@ -221,7 +221,7 @@ public class Memcached {
 	 * Desconectar do servidor Memcached.
 	 */
 	private void disconnect() {
-//		memcachedClient.flush(); // limpa todos os registros no cache
+		memcachedClient.flush(); // limpa todos os registros no cache
 		memcachedClient.shutdown();
 	}
 	
