@@ -3,10 +3,13 @@ package br.com.supero.cache;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import net.spy.memcached.MemcachedClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +19,6 @@ import org.springframework.stereotype.Component;
 import br.com.supero.config.EnvironmentProperties;
 import br.com.supero.model.dto.AbstractDTO;
 import br.com.supero.model.dto.AbstractDTOFactory;
-import net.spy.memcached.MemcachedClient;
 
 /**
  * Classe componente para gerenciar objetos armazenados no cache. 
@@ -73,6 +75,20 @@ public class Memcached {
 	}
 	
 	/**
+	 * Criar um cache individual para o objeto utilizando o id do mesmo
+	 * 
+	 * @param key, value
+	 */
+	public void putObjectInCache(String key, Object value) {
+		
+		Long objectId = abstractDTOFactory
+				.createAbstractDTOFromObject(value).getId();
+		key = key + "_" + objectId;
+		
+		putInCache(key, value);
+	}
+	
+	/**
 	 * Adicionar ao cache
 	 * 
 	 * @param key, value
@@ -113,8 +129,13 @@ public class Memcached {
 				    .map(dto -> dto.getId().equals(cachedDTO.getId()) ? cachedDTO : dto)
 				    .collect(Collectors.toList());
 			
-			// atualizar cache 
+			// atualizar cache (lista)
 			memcachedClient.replace(key, this.expirationTime, dtoList);
+			
+			// atualizar objeto cacheado pelo id 
+			key = key + "_" + cachedDTO.getId();
+			memcachedClient.replace(key, this.expirationTime, cachedDTO);
+
 		} else {
 			clearCache(key);
 		}
@@ -137,25 +158,36 @@ public class Memcached {
 	 * @return Object
 	 */
 	@SuppressWarnings("unchecked")
-	public Object getInCache(String key, Long id) {
-		Object cachedObject = getInCache(key);
+	public AbstractDTO getInCache(String key, Long id) {
 		
-		if (cachedObject instanceof List)  {
+		// tentar pegar objeto cacheado pelo id
+		String objectKey = key + "_" + id;
+		Object cachedObject = getInCache(objectKey);
+		
+		// se nao houver objeto cacheado pelo id, pegar da lista em cache
+		if (cachedObject == null) {
 			
-			// converter lista de objetos para lista de AbstractDTO
-			List<AbstractDTO> dtoList = abstractDTOFactory
-					.createAbstractDTOFromObjectList((List<Object>) cachedObject);
+			cachedObject = getInCache(key);
 			
-			// pegar elemento no cache cujo id seja igual ao passado como parametro
-			cachedObject = dtoList.stream()
-				    .filter(dto -> dto.getId().equals(id))
-				    .findFirst()
-				    .get();
-			
-			return cachedObject;
+			if (cachedObject instanceof List)  {
+				
+				// converter lista de objetos para lista de AbstractDTO
+				List<AbstractDTO> dtoList = abstractDTOFactory
+						.createAbstractDTOFromObjectList((List<Object>) cachedObject);
+				
+				// pegar elemento no cache cujo id seja igual ao passado como parametro
+				cachedObject = dtoList.stream()
+						.filter(dto -> dto.getId().equals(id))
+						.findFirst()
+						.get();
+				
+				// cachear objeto pelo id
+				putObjectInCache(key, cachedObject);
+			}
 		}
 		
-		return null;
+		return abstractDTOFactory
+				.createAbstractDTOFromObject(cachedObject);
 	}
 
 	/**
@@ -181,6 +213,10 @@ public class Memcached {
 		} else {
 			clearCache(key);
 		}
+		
+		// deletar cache individual de objeto
+		key = key + "_" + id;
+		clearCache(key);
 	}
 	
 	/**
@@ -188,8 +224,14 @@ public class Memcached {
 	 * 
 	 * @param key
 	 */
-	public void clearCache(String key) {
-		memcachedClient.delete(key);
+	public boolean clearCache(String key) {
+		try {
+			return memcachedClient.delete(key).get();
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	/**
