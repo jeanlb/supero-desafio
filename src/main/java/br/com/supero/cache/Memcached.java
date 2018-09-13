@@ -243,8 +243,12 @@ public class Memcached {
 		int memcachedPort = environmentProperties.getMemcachedPort();
 		
 		try {
+			// instanciar memcachedClient e conectar com o servidor Memcached
 			memcachedClient = new MemcachedClient(new InetSocketAddress(
 					memcachedHost, memcachedPort));
+			
+			// limpa todos os registros no cache
+			memcachedClient.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
