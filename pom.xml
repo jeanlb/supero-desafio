@@ -86,8 +86,8 @@
 	</dependencies>
 
 	<profiles>
+		<!-- Desenvolvimento. Profile padrao -->
 		<profile>
-			<!-- Desenvolvimento. Profile padrao -->
 			<id>dev</id>
 			<properties>
 				<spring.profile>dev</spring.profile>

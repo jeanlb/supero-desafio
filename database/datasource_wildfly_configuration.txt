@@ -1,4 +1,26 @@
-- Exemplo de configuração de datasource, a ser adicionado no arquivo standalone.xml do Wildfly, entre as tags <datasources> desse arquivo.
+- Configurar conector MySQL no Wildfly:
+
+1 – Acesse o diretório $WILDFLY_HOME/modules/system/layers/base/com.
+2 – Uma vez lá, crie o diretório mysql e seu subdiretório main.
+3 – Dentro de main coloque o jar do driver JDBC do MySQL.
+4 – Agora crie um arquivo chamado module.xml e dentro dele adicione as seguintes linhas de código:
+
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<module xmlns="urn:jboss:module:1.1" name="com.mysql">
+    <resources>
+        <!-- Nomear o conector segundo com o que for utilizado (versao) -->
+        <resource-root path="mysql-connector-java-5.1.47.jar"/>
+    </resources>
+    <dependencies>
+        <module name="javax.api"/>
+        <module name="javax.transaction.api"/>
+        <module name="javax.servlet.api" optional="true"/>
+    </dependencies>
+</module>
+
+5 – Agora acesse o diretório $WILDFLY_HOME/standalone/configuration e abra o arquivo standalone.xml.
+Exemplo de configuração de datasource, a ser adicionado no arquivo standalone.xml do Wildfly, entre as tags <datasources> desse arquivo.
 
 <datasource jta="true" jndi-name="java:jboss/datasources/db_task-ds" pool-name="db_task" enabled="true" use-java-context="true" use-ccm="true">
 		    <connection-url>jdbc:mysql://localhost:3306/db_task</connection-url>
@@ -14,6 +36,8 @@
 		        <password></password>
 		    </security>
             <timeout>
+                <!-- Apos a aplicacao usar uma conexao (concluir alguma operacao CRUD), a conexao eh fechada e devolvida para o pool. 
+                	 Ou seja, a conexao eh liberada para outras requisicoes a utilizarem -->
                 <!-- indicate the maximum time a connection may be idle before being closed and returned to the pool -->
                 <idle-timeout-minutes>0</idle-timeout-minutes>
             </timeout>
@@ -29,9 +53,4 @@
 		    	<xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
  </driver>
 
-- Para ver estas e outras configurações de datasource/connection pool no Wildfly, ver:
-
-https://desenvolvo.wordpress.com/2013/08/27/configurando-datasource-no-jboss-wildfly-com-mysql/
-
-
-        
+- Adapted from: https://desenvolvo.wordpress.com/2013/08/27/configurando-datasource-no-jboss-wildfly-com-mysql/
