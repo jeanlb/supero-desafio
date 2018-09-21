@@ -9,6 +9,7 @@
 .externalToolBuilders
 test-output
 application-dev.properties
+application-prod.properties
 
 # Maven
 target/
@@ -21,3 +22,4 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+m2e-wtp/

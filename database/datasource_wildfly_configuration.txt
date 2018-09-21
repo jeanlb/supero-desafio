@@ -1,0 +1,37 @@
+- Exemplo de configuração de datasource, a ser adicionado no arquivo standalone.xml do Wildfly, entre as tags <datasources> desse arquivo.
+
+<datasource jta="true" jndi-name="java:jboss/datasources/db_task-ds" pool-name="db_task" enabled="true" use-java-context="true" use-ccm="true">
+		    <connection-url>jdbc:mysql://localhost:3306/db_task</connection-url>
+		    <driver>mysql</driver>
+		    <transaction-isolation>TRANSACTION_READ_COMMITTED</transaction-isolation>
+		    <pool>
+		        <min-pool-size>5</min-pool-size>
+		        <max-pool-size>5</max-pool-size>
+                <prefill>true</prefill>
+		    </pool>
+		    <security>
+		        <user-name>root</user-name>
+		        <password></password>
+		    </security>
+            <timeout>
+                <!-- indicate the maximum time a connection may be idle before being closed and returned to the pool -->
+                <idle-timeout-minutes>0</idle-timeout-minutes>
+            </timeout>
+		    <statement>
+		        <prepared-statement-cache-size>32</prepared-statement-cache-size>
+		        <share-prepared-statements>true</share-prepared-statements>
+		    </statement>
+</datasource>
+
+- Exemplo de configuração de driver do datasource acima, para ser adicionado entre as tags <drivers>
+
+<driver name="mysql" module="com.mysql">
+		    	<xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+ </driver>
+
+- Para ver estas e outras configurações de datasource/connection pool no Wildfly, ver:
+
+https://desenvolvo.wordpress.com/2013/08/27/configurando-datasource-no-jboss-wildfly-com-mysql/
+
+
+        

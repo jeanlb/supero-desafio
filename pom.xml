@@ -7,7 +7,7 @@
 	<groupId>br.com.supero</groupId>
 	<artifactId>tasklist</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>supero-desafio</name>
 	<description>Projeto desafio para avaliação de conhecimentos em desenvolvimento Java</description>
@@ -16,7 +16,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.4.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
 	</parent>
 
 	<properties>
@@ -47,6 +47,17 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- excluir tomcat embutido no Spring Boot, para fazer deploy em container 
+			externo (Wildfly, Tomcat, etc). em modo de desenvolvimento, o tomcat embutido 
+			continua funcionando -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- biblioteca para conversao de tipos de objetos (entity para dto, dto 
+			para entity) -->
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
@@ -65,7 +76,7 @@
 			<version>1.11</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/net.spy/spymemcached -->
+		<!-- cliente Java para integracao com o servidor Memcached -->
 		<dependency>
 			<groupId>net.spy</groupId>
 			<artifactId>spymemcached</artifactId>
@@ -74,7 +85,29 @@
 
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<!-- Desenvolvimento. Profile padrao -->
+			<id>dev</id>
+			<properties>
+				<spring.profile>dev</spring.profile>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<!-- Producao. Para gerar o war deste profile, usar o comando: mvn clean 
+			install package -Pprod -DskipTests -->
+		<profile>
+			<id>prod</id>
+			<properties>
+				<spring.profile>prod</spring.profile>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
+		<finalName>tasklist</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
