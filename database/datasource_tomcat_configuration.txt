@@ -1,0 +1,12 @@
+1 - Adicionar o jar do conector MySQL a pasta lib do Tomcat
+2 - No arquivo context.xml, dentro da pasta conf, adicione a tag Resource 
+(que contera as configuracoes do datasource) dentro da tag Context. Segue exemplo:
+
+<!-- Calculo padrao para connection pool: pool minimo/inicial sendo a quantidade de cores do servidor; 
+     pool maximo sendo a quantidade de cores x2 -->
+<Resource name="jdbc/db_task-ds" auth="Container" type="javax.sql.DataSource"
+           maxTotal="8" initialSize="4" minEvictableIdleTimeMillis = "0"
+           username="root" password="" driverClassName="com.mysql.jdbc.Driver"
+           url="jdbc:mysql://localhost:3306/db_task"/>
+           
+Adapted from: https://tomcat.apache.org/tomcat-8.5-doc/jndi-datasource-examples-howto.html#MySQL_DBCP_1.x_Example
